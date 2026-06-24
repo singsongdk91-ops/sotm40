@@ -65,7 +65,7 @@
     background:linear-gradient(180deg,#ECE6F6 0%,#F4E2E9 36%,#FBE7D9 66%,#FBF7F3 100%);
   }
   .scene{display:block;width:100%;height:auto;position:relative;z-index:0;margin-top:6px}
-  #climber{transform:translate(400px,448px);transition:transform 1.3s cubic-bezier(.22,1,.36,1)}
+  #climber{transform:translate(158px,406px);transition:transform 1.3s cubic-bezier(.22,1,.36,1)}
   #trailGold{transition:stroke-dashoffset 1.3s cubic-bezier(.22,1,.36,1)}
   #figGlow{transition:opacity 1.3s ease}
   #figLight{transition:opacity 1.3s ease}
@@ -111,7 +111,9 @@
   .dock-pct{font-size:13px;color:var(--muted);font-family:"Pretendard",sans-serif}
   .bar{height:8px;border-radius:100px;background:rgba(70,55,90,.08);margin-top:14px;overflow:hidden}
   .bar-fill{height:100%;width:0;border-radius:100px;background:linear-gradient(90deg,var(--peach),var(--rose));transition:width 1s cubic-bezier(.22,1,.36,1)}
-  .dock-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .dock-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .dock-actions .btn{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;font-size:13.5px;line-height:1.25;text-align:center}
+  .dock-actions .btn svg{width:16px;height:16px;flex:0 0 auto}
   .btn{
     appearance:none;border:0;cursor:pointer;font-family:inherit;font-weight:600;
     border-radius:12px;padding:11px 18px;font-size:14px;transition:transform .12s ease,background .2s ease,opacity .2s;
@@ -127,6 +129,10 @@
   }
   .btn-share:hover{background:rgba(157,151,216,.22)}
   .btn-share svg{width:16px;height:16px}
+  .btn-journal{
+    background:rgba(232,156,124,.12);color:var(--peach-deep);border:1px solid rgba(232,156,124,.34);
+  }
+  .btn-journal:hover{background:rgba(232,156,124,.2)}
   .share-toast{
     margin-top:12px;font-size:13px;color:var(--sage-deep);font-weight:600;
     background:rgba(127,191,156,.14);border:1px solid rgba(127,191,156,.4);
@@ -178,7 +184,10 @@
   }
   .day:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 12px 26px -14px rgba(70,55,90,.28)}
   .day:focus-visible{outline:2px solid var(--peach);outline-offset:2px}
+  .day .top-row{display:flex;align-items:center;gap:6px}
   .day .dno{font-family:"Fraunces",serif;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--muted-2)}
+  .day .note-mark{display:inline-flex;color:var(--lav-deep);opacity:.85}
+  .day .note-mark svg{width:12px;height:12px}
   .day .dttl{margin-top:auto;font-size:14px;font-weight:600;line-height:1.32;letter-spacing:-.02em;color:var(--text)}
   .day .dot{
     position:absolute;top:13px;right:13px;width:18px;height:18px;border-radius:50%;
@@ -237,6 +246,32 @@
   .block p{font-size:15px;line-height:1.66;color:#524C66}
   .block.action p{color:#7A5440}
   .block.prayer p{color:var(--muted);font-style:italic;font-size:14.5px}
+  .block.journal{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+  .block.journal .blab{display:flex;align-items:center;gap:8px}
+  .block.journal .lock{
+    font-family:"Pretendard",sans-serif;text-transform:none;letter-spacing:0;font-weight:600;
+    font-size:10.5px;color:var(--lav-deep);background:rgba(157,151,216,.14);
+    border:1px solid rgba(157,151,216,.3);border-radius:100px;padding:2px 8px;
+  }
+  #journalInput{
+    width:100%;resize:vertical;min-height:96px;
+    font-family:"Pretendard",sans-serif;font-size:14.5px;line-height:1.6;color:var(--text);
+    background:var(--bg);border:1px solid var(--line-2);border-radius:12px;padding:12px 13px;
+    transition:border-color .2s ease,box-shadow .2s ease;-webkit-appearance:none;
+  }
+  #journalInput::placeholder{color:var(--muted-2)}
+  #journalInput:focus{outline:none;border-color:var(--lav);box-shadow:0 0 0 3px rgba(157,151,216,.16)}
+  .journal-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+  .journal-status{font-size:12.5px;color:var(--sage-deep);font-weight:600;opacity:0;transition:opacity .25s ease}
+  .journal-status.show{opacity:1}
+  .journal-status.muted{color:var(--muted)}
+  .journal-save{
+    border:0;cursor:pointer;font-family:inherit;font-weight:700;font-size:13.5px;letter-spacing:-.01em;
+    color:#fff;background:linear-gradient(100deg,var(--lav),#B6A6DE);border-radius:10px;padding:9px 16px;
+    transition:transform .1s ease,opacity .2s ease;
+  }
+  .journal-save:active{transform:scale(.97)}
+  .journal-save:disabled{opacity:.5;cursor:default}
   .block.stott{background:rgba(157,151,216,.12);border:1px solid rgba(157,151,216,.3);border-radius:14px;padding:15px 16px}
   .block.stott .blab{color:var(--lav-deep)}
   .block.stott p{color:#514C70;font-size:14.5px}
@@ -279,6 +314,31 @@
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;animation:none !important}
   }
+
+  /* ---------- 묵상 기록 보기 ---------- */
+  .j-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+  #jList{display:flex;flex-direction:column;gap:12px}
+  .j-item{border:1px solid var(--line);border-radius:14px;padding:14px 15px;background:var(--bg)}
+  .j-item-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+  .j-day{font-family:"Pretendard",sans-serif;font-size:12px;font-weight:700;color:var(--peach-deep);white-space:nowrap}
+  .j-ttl{font-size:14px;font-weight:600;color:var(--text);line-height:1.3}
+  .j-text{font-size:14px;line-height:1.6;color:#524C66;white-space:pre-wrap;word-break:break-word}
+  .j-open{
+    margin-top:10px;border:0;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;
+    color:var(--lav-deep);background:rgba(157,151,216,.12);border:1px solid rgba(157,151,216,.3);
+    border-radius:9px;padding:6px 12px;transition:background .2s ease;
+  }
+  .j-open:hover{background:rgba(157,151,216,.2)}
+  .j-empty{text-align:center;color:var(--muted);font-size:14px;line-height:1.7;padding:30px 10px}
+  .j-empty .em-ic{font-size:30px;display:block;margin-bottom:10px}
+  .j-foot{margin-top:20px;display:flex;justify-content:center}
+  .j-foot.hide{display:none}
+  .btn-export{
+    border:0;cursor:pointer;font-family:inherit;font-weight:600;font-size:13px;letter-spacing:-.01em;
+    color:var(--text);background:rgba(70,55,90,.05);border:1px solid var(--line);border-radius:10px;padding:10px 16px;
+    transition:background .2s ease;
+  }
+  .btn-export:hover{background:rgba(70,55,90,.09)}
 </style>
 </head>
 <body>
@@ -320,26 +380,26 @@
     </defs>
 
     <!-- 뒤 능선 -->
-    <path d="M0,460 L0,402 L150,332 L300,382 L470,318 L650,372 L800,330 L800,460 Z" fill="url(#mtnBack)"/>
-    <!-- 메인 산 -->
-    <path d="M0,460 L0,420 L120,360 L210,396 L330,300 L400,72 L470,300 L590,396 L690,356 L800,420 L800,460 Z" fill="url(#mtnGrad)"/>
+    <path d="M0,460 L0,412 L150,378 L300,398 L430,356 L560,388 L680,352 L800,378 L800,460 Z" fill="url(#mtnBack)"/>
+    <!-- 메인 산 (왼쪽 낮고 오른쪽 정상) -->
+    <path d="M0,460 L0,436 L140,404 L300,356 L430,300 L520,224 L640,96 L716,214 L800,300 L800,460 Z" fill="url(#mtnGrad)"/>
 
-    <!-- 앞으로 가야 할 길(점선) -->
-    <path d="M400,448 L322,402 L472,360 L330,316 L462,272 L356,224 L432,178 L400,132"
+    <!-- 앞으로 가야 할 길(점선) : 좌하단 → 우상단 정상 -->
+    <path d="M158,406 L250,384 L300,360 L392,336 L410,312 L495,286 L482,262 L545,232 L556,200 L600,168 L612,136 L628,118"
       fill="none" stroke="rgba(111,105,178,.45)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 8"/>
     <!-- 지나온 길(빛나는 길) -->
-    <path id="trailGold" d="M400,448 L322,402 L472,360 L330,316 L462,272 L356,224 L432,178 L400,132"
+    <path id="trailGold" d="M158,406 L250,384 L300,360 L392,336 L410,312 L495,286 L482,262 L545,232 L556,200 L600,168 L612,136 L628,118"
       fill="none" stroke="#E08A5E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 
-    <!-- 정상의 주님(빛으로 표현) -->
-    <circle id="figGlow" cx="400" cy="98" r="96" fill="url(#glowGrad)" opacity=".3"/>
+    <!-- 정상의 주님(빛으로 표현) : 오른쪽 위 -->
+    <circle id="figGlow" cx="640" cy="94" r="92" fill="url(#glowGrad)" opacity=".3"/>
     <g id="figLight" filter="url(#halo)" fill="url(#figGrad)">
-      <circle cx="400" cy="83" r="10"/>
-      <path d="M386,93 Q400,88 414,93 L423,127 Q400,135 377,127 Z"/>
+      <circle cx="640" cy="80" r="10"/>
+      <path d="M626,90 Q640,85 654,90 L663,124 Q640,132 617,124 Z"/>
     </g>
-    <text x="424" y="92" class="lbl lbl-lord">주님</text>
+    <text x="664" y="90" class="lbl lbl-lord">주님</text>
 
-    <!-- 나(진행도에 따라 위로 이동) -->
+    <!-- 나(진행도에 따라 정상으로 이동) -->
     <g id="climber">
       <circle r="13" fill="url(#glowGrad)" opacity=".55"/>
       <circle r="5" fill="#FFF3DA" stroke="#C9744F" stroke-width="2"/>
@@ -356,11 +416,15 @@
         <span class="of num">/ 40</span>
         <span class="lab">일 완료</span>
       </div>
-      <div class="dock-pct" id="pct">0% · 주님까지 40일</div>
+      <div class="dock-pct" id="pct">0% · 산에 오르기까지 40일</div>
     </div>
     <div class="bar"><div class="bar-fill" id="barFill"></div></div>
     <div class="dock-actions">
       <button class="btn btn-primary" id="todayBtn">오늘 한 걸음 오르기</button>
+      <button class="btn btn-journal" id="viewJournalsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        묵상 기록 보기
+      </button>
       <button class="btn btn-share" id="shareBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/></svg>
         산악크루 초대하기
@@ -442,6 +506,15 @@
         <p id="prayer"></p>
       </div>
 
+      <div class="block journal">
+        <div class="blab">나의 묵상 기록 <span class="lock">나만 보기</span></div>
+        <textarea id="journalInput" rows="4" placeholder="오늘 마음에 닿은 것, 적용하며 느낀 점을 자유롭게 적어보세요. (이 기기에만 저장되고 나만 볼 수 있어요)"></textarea>
+        <div class="journal-foot">
+          <span class="journal-status" id="journalStatus"></span>
+          <button class="journal-save" id="journalSave">기록 저장</button>
+        </div>
+      </div>
+
       <div class="sheet-foot">
         <button class="nav-btn" id="prevBtn" aria-label="이전 날">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>
@@ -450,6 +523,28 @@
         <button class="nav-btn" id="nextBtn" aria-label="다음 날">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg>
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JOURNALS MODAL -->
+<div class="scrim" id="jScrim" role="dialog" aria-modal="true" aria-labelledby="jTitle">
+  <div class="sheet" id="jSheet">
+    <button class="close-x" id="jCloseX" aria-label="닫기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="grab"></div>
+    <div class="sheet-pad">
+      <div class="sheet-eyebrow">
+        <span class="sheet-day">나의 묵상 기록</span>
+        <span class="sheet-week" id="jCount"></span>
+      </div>
+      <h2 id="jTitle" style="font-size:20px;margin-bottom:6px">그동안의 발자취</h2>
+      <p class="j-sub">이 기기에만 저장된, 나만 보는 기록이에요.</p>
+      <div id="jList"></div>
+      <div class="j-foot" id="jFoot">
+        <button class="btn-export" id="jExportBtn">전체 기록 내보내기 (.txt)</button>
       </div>
     </div>
   </div>
@@ -511,7 +606,9 @@ const DAYS = [
 
 /* ---------- 상태 (각 기기 브라우저에 저장 · 로그인 불필요) ---------- */
 const STORE_KEY = "sotm40:done";
+const JOURNAL_KEY = "sotm40:journal";
 let done = new Set();
+let journals = {};   // { dayIndex: "기록 텍스트" } — 이 기기에만 저장, 나만 봄
 let current = 0;
 
 function loadState(){
@@ -519,10 +616,18 @@ function loadState(){
     const raw = localStorage.getItem(STORE_KEY);
     if(raw){ done = new Set(JSON.parse(raw)); }
   }catch(e){ /* 저장 불가 환경(시크릿 모드 등) → 이번 세션만 유지 */ }
+  try{
+    const jr = localStorage.getItem(JOURNAL_KEY);
+    if(jr){ journals = JSON.parse(jr) || {}; }
+  }catch(e){ journals = {}; }
   render(); refreshProgress();
 }
 function saveState(){
   try{ localStorage.setItem(STORE_KEY, JSON.stringify([...done])); }
+  catch(e){ /* 저장 불가 환경에서는 조용히 무시 */ }
+}
+function saveJournals(){
+  try{ localStorage.setItem(JOURNAL_KEY, JSON.stringify(journals)); }
   catch(e){ /* 저장 불가 환경에서는 조용히 무시 */ }
 }
 
@@ -545,12 +650,13 @@ function render(){
       if(d.w !== wi) return;
       const isDone = done.has(i);
       const isNext = (i === nextIndex());
+      const hasNote = !!(journals[i] && journals[i].trim());
       const card = document.createElement("button");
       card.className = "day" + (isDone?" done":"") + (isNext?" is-next":"");
       card.setAttribute("aria-label", `Day ${i+1} ${d.t}`);
       card.innerHTML = `
         ${isNext?'<span class="badge-next">오늘</span>':''}
-        <span class="dno">DAY ${String(i+1).padStart(2,"0")}</span>
+        <span class="top-row"><span class="dno">DAY ${String(i+1).padStart(2,"0")}</span>${hasNote?'<span class="note-mark" title="묵상 기록 있음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>':''}</span>
         <span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5"><path d="M5 12l5 5 9-10"/></svg></span>
         <span class="dttl">${d.t}</span>`;
       card.addEventListener("click", ()=>openSheet(i));
@@ -573,7 +679,7 @@ function refreshProgress(){
   document.getElementById("cntDone").textContent = n;
   document.getElementById("barFill").style.width = pct + "%";
   const remain = total - n;
-  document.getElementById("pct").textContent = remain>0 ? `${pct}% · 주님까지 ${remain}일` : `100% · 주님 앞에 섰습니다`;
+  document.getElementById("pct").textContent = remain>0 ? `${pct}% · 산에 오르기까지 ${remain}일` : `100% · 정상에서 주님을 만났어요`;
 
   // 등반: '나'를 길 위로 이동시키고, 지나온 길을 점등, 주님의 빛을 밝힌다
   const trail = document.getElementById("trailGold");
@@ -597,6 +703,7 @@ const sheet = document.getElementById("sheet");
 let lastFocused = null;
 
 function openSheet(i){
+  commitJournal();           // 이전에 열려있던 날의 기록을 먼저 저장
   current = i;
   const d = DAYS[i];
   document.getElementById("sheetDay").textContent = "DAY " + String(i+1).padStart(2,"0");
@@ -611,6 +718,10 @@ function openSheet(i){
   const chip = document.getElementById("markChip");
   if(d.mark){ chip.innerHTML = '<span class="dot-sep"></span>' + d.mark; chip.style.display = "inline-flex"; }
   else { chip.style.display = "none"; }
+  // 묵상 기록 불러오기
+  const ta = document.getElementById("journalInput");
+  ta.value = journals[i] || "";
+  setJournalStatus(journals[i] ? "저장된 기록을 불러왔어요" : "", true);
   updateCheckBtn();
   document.getElementById("prevBtn").disabled = (i===0);
   document.getElementById("nextBtn").disabled = (i===DAYS.length-1);
@@ -621,9 +732,27 @@ function openSheet(i){
   document.getElementById("closeX").focus();
 }
 function closeSheet(){
+  commitJournal();           // 닫을 때 기록 저장
   scrim.classList.remove("open");
   document.body.style.overflow = "";
   if(lastFocused) lastFocused.focus();
+}
+function commitJournal(){
+  const ta = document.getElementById("journalInput");
+  if(!ta) return;
+  const val = ta.value;
+  const prev = journals[current] || "";
+  if(val.trim() === prev.trim()) return;       // 변경 없음
+  if(val.trim() === ""){ delete journals[current]; }
+  else { journals[current] = val; }
+  saveJournals();
+  render(); refreshProgress();                  // 카드의 기록 표시 갱신
+}
+function setJournalStatus(msg, muted){
+  const el = document.getElementById("journalStatus");
+  el.textContent = msg || "";
+  el.classList.toggle("muted", !!muted);
+  el.classList.toggle("show", !!msg);
 }
 function updateCheckBtn(){
   const btn = document.getElementById("checkBtn");
@@ -646,9 +775,84 @@ document.getElementById("closeX").addEventListener("click", closeSheet);
 scrim.addEventListener("click", (e)=>{ if(e.target===scrim) closeSheet(); });
 document.addEventListener("keydown", (e)=>{
   if(!scrim.classList.contains("open")) return;
-  if(e.key==="Escape") closeSheet();
-  else if(e.key==="ArrowLeft" && current>0) openSheet(current-1);
+  if(e.key==="Escape"){ closeSheet(); return; }
+  // 기록 입력 중에는 좌우 화살표로 날짜가 넘어가지 않도록
+  if(e.target && (e.target.tagName==="TEXTAREA" || e.target.tagName==="INPUT")) return;
+  if(e.key==="ArrowLeft" && current>0) openSheet(current-1);
   else if(e.key==="ArrowRight" && current<DAYS.length-1) openSheet(current+1);
+});
+
+/* 묵상 기록 저장 */
+document.getElementById("journalSave").addEventListener("click", ()=>{
+  const ta = document.getElementById("journalInput");
+  const val = ta.value;
+  if(val.trim()===""){ delete journals[current]; }
+  else { journals[current] = val; }
+  saveJournals();
+  render(); refreshProgress();
+  setJournalStatus(val.trim()==="" ? "기록을 비웠어요" : "저장되었어요 ✓", val.trim()==="");
+});
+document.getElementById("journalInput").addEventListener("input", ()=>{
+  setJournalStatus("", true); // 편집 시작하면 상태 문구 숨김
+});
+
+/* ---------- 묵상 기록 보기 모달 ---------- */
+const jScrim = document.getElementById("jScrim");
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function openJournals(){
+  const list = document.getElementById("jList");
+  const entries = DAYS.map((d,i)=>({i,d,text:(journals[i]||"").trim()})).filter(e=>e.text);
+  document.getElementById("jCount").textContent = entries.length ? entries.length + "개" : "";
+  document.getElementById("jFoot").classList.toggle("hide", entries.length===0);
+  if(entries.length===0){
+    list.innerHTML = '<div class="j-empty"><span class="em-ic">🕊️</span>아직 남긴 기록이 없어요.<br>각 Day를 열어 \'나의 묵상 기록\'에 적어보세요.</div>';
+  }else{
+    list.innerHTML = entries.map(e=>`
+      <div class="j-item">
+        <div class="j-item-head">
+          <span class="j-day">DAY ${String(e.i+1).padStart(2,"0")}</span>
+          <span class="j-ttl">${escapeHtml(e.d.t)}</span>
+        </div>
+        <p class="j-text">${escapeHtml(e.text)}</p>
+        <button class="j-open" data-i="${e.i}">이 날 열기</button>
+      </div>`).join("");
+    list.querySelectorAll(".j-open").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const idx = parseInt(btn.getAttribute("data-i"),10);
+        closeJournals();
+        openSheet(idx);
+      });
+    });
+  }
+  jScrim.classList.add("open");
+  document.body.style.overflow = "hidden";
+  document.getElementById("jSheet").scrollTop = 0;
+  document.getElementById("jCloseX").focus();
+}
+function closeJournals(){
+  jScrim.classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.getElementById("viewJournalsBtn").addEventListener("click", openJournals);
+document.getElementById("jCloseX").addEventListener("click", closeJournals);
+jScrim.addEventListener("click", (e)=>{ if(e.target===jScrim) closeJournals(); });
+document.addEventListener("keydown", (e)=>{
+  if(jScrim.classList.contains("open") && e.key==="Escape") closeJournals();
+});
+document.getElementById("jExportBtn").addEventListener("click", ()=>{
+  const entries = DAYS.map((d,i)=>({i,d,text:(journals[i]||"").trim()})).filter(e=>e.text);
+  if(entries.length===0) return;
+  let out = "산상수훈 40일 — 나의 묵상 기록\n\n";
+  entries.forEach(e=>{
+    out += `■ DAY ${String(e.i+1).padStart(2,"0")} · ${e.d.t} (${e.d.ref})\n${e.text}\n\n`;
+  });
+  const blob = new Blob([out], {type:"text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "산상수훈40일_묵상기록.txt";
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
 });
 
 /* ---------- 도크 버튼 ---------- */
