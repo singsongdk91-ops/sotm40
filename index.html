@@ -209,10 +209,12 @@
   .scrim{
     position:fixed;inset:0;z-index:50;background:rgba(60,50,80,.32);backdrop-filter:blur(5px);
     opacity:0;pointer-events:none;transition:opacity .3s ease;display:flex;align-items:flex-end;justify-content:center;
+    padding-top:env(safe-area-inset-top);
   }
   .scrim.open{opacity:1;pointer-events:auto}
   .sheet{
-    width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
+    position:relative;
+    width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow-y:auto;
     background:var(--surface);
     border:1px solid var(--line-2);border-bottom:0;
     border-radius:24px 24px 0 0;
@@ -223,9 +225,14 @@
   .scrim.open .sheet{transform:translateY(0);opacity:1}
   @media(min-width:640px){
     .scrim{align-items:center}
-    .sheet{border-radius:24px;border-bottom:1px solid var(--line-2);max-height:86vh;box-shadow:0 30px 70px -20px rgba(70,55,90,.4)}
+    .sheet{border-radius:24px;border-bottom:1px solid var(--line-2);max-height:86vh;max-height:86dvh;box-shadow:0 30px 70px -20px rgba(70,55,90,.4)}
   }
-  .grab{width:42px;height:5px;border-radius:100px;background:var(--line-2);margin:11px auto 0}
+  .sheet-top{
+    position:sticky;top:0;z-index:5;
+    background:var(--surface);border-radius:24px 24px 0 0;
+    padding:10px 0 8px;border-bottom:1px solid var(--line);
+  }
+  .grab{width:42px;height:5px;border-radius:100px;background:var(--line-2);margin:0 auto}
   .sheet-pad{padding:18px 24px 30px}
   .sheet-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
   .sheet-day{font-family:"Pretendard",sans-serif;font-size:13px;font-weight:700;color:var(--peach-deep);letter-spacing:.01em}
@@ -302,10 +309,11 @@
   .check-btn.donestate{background:rgba(127,191,156,.18);color:var(--sage-deep);border:1px solid rgba(127,191,156,.5)}
 
   .close-x{
-    position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:10px;z-index:3;
-    background:rgba(70,55,90,.05);border:1px solid var(--line);color:var(--muted);cursor:pointer;display:grid;place-items:center;
+    position:absolute;top:8px;right:14px;width:36px;height:36px;border-radius:10px;z-index:6;
+    background:var(--surface);border:1px solid var(--line-2);color:var(--text);cursor:pointer;display:grid;place-items:center;
+    box-shadow:0 2px 10px rgba(70,55,90,.16);
   }
-  .close-x:hover{background:rgba(70,55,90,.1);color:var(--text)}
+  .close-x:hover{background:rgba(70,55,90,.06)}
 
   footer{padding:34px 20px 60px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.7}
   footer .loop{color:var(--peach-deep);font-weight:600}
@@ -469,10 +477,12 @@
 <!-- MODAL -->
 <div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheet" id="sheet">
-    <button class="close-x" id="closeX" aria-label="닫기">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <div class="grab"></div>
+    <div class="sheet-top">
+      <div class="grab"></div>
+      <button class="close-x" id="closeX" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
     <div class="sheet-pad">
       <div class="sheet-eyebrow">
         <span class="sheet-day num" id="sheetDay">DAY 01</span>
@@ -531,10 +541,12 @@
 <!-- JOURNALS MODAL -->
 <div class="scrim" id="jScrim" role="dialog" aria-modal="true" aria-labelledby="jTitle">
   <div class="sheet" id="jSheet">
-    <button class="close-x" id="jCloseX" aria-label="닫기">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <div class="grab"></div>
+    <div class="sheet-top">
+      <div class="grab"></div>
+      <button class="close-x" id="jCloseX" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
     <div class="sheet-pad">
       <div class="sheet-eyebrow">
         <span class="sheet-day">나의 묵상 기록</span>
