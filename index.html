@@ -121,6 +121,20 @@
   .btn-primary{background:linear-gradient(100deg,var(--peach),var(--rose));color:#fff}
   .btn-ghost{background:rgba(70,55,90,.05);color:var(--text);border:1px solid var(--line)}
   .btn-ghost:hover{background:rgba(70,55,90,.09)}
+  .btn-share{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(157,151,216,.14);color:var(--lav-deep);border:1px solid rgba(157,151,216,.35);
+  }
+  .btn-share:hover{background:rgba(157,151,216,.22)}
+  .btn-share svg{width:16px;height:16px}
+  .share-toast{
+    margin-top:12px;font-size:13px;color:var(--sage-deep);font-weight:600;
+    background:rgba(127,191,156,.14);border:1px solid rgba(127,191,156,.4);
+    border-radius:10px;padding:9px 12px;
+    opacity:0;transform:translateY(-4px);height:0;padding-top:0;padding-bottom:0;border-width:0;overflow:hidden;
+    transition:opacity .25s ease,transform .25s ease,height .25s ease,padding .25s ease;
+  }
+  .share-toast.show{opacity:1;transform:translateY(0);height:auto;padding:9px 12px;border-width:1px}
 
   /* ---------- INTRO ---------- */
   .intro{max-width:var(--maxw);margin:30px auto 0;padding:0 20px}
@@ -347,8 +361,13 @@
     <div class="bar"><div class="bar-fill" id="barFill"></div></div>
     <div class="dock-actions">
       <button class="btn btn-primary" id="todayBtn">오늘 한 걸음 오르기</button>
+      <button class="btn btn-share" id="shareBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/></svg>
+        산악크루 초대하기
+      </button>
       <button class="btn btn-ghost" id="resetBtn">진행 초기화</button>
     </div>
+    <div class="share-toast" id="shareToast">링크가 복사되었어요. 산악크루에게 붙여넣어 보내세요.</div>
   </div>
 </div>
 
@@ -642,6 +661,41 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
   if(confirm("진행을 모두 초기화하고 Day 1부터 다시 시작할까요?")){
     done = new Set(); render(); refreshProgress(); saveState();
     window.scrollTo({top:0, behavior:"smooth"});
+  }
+});
+
+/* ---------- 공유하기 ---------- */
+const shareData = {
+  title: "ICC 산상수훈 40일 챌린지",
+  text: "세상과 다른 하나님 나라의 삶으로, 산 위의 주님께 매일 한 걸음씩 다가가는 40일. 함께 도전해요!",
+  url: location.href
+};
+function showShareToast(msg){
+  const t = document.getElementById("shareToast");
+  if(msg) t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showShareToast._t);
+  showShareToast._t = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+document.getElementById("shareBtn").addEventListener("click", async ()=>{
+  const data = Object.assign({}, shareData, {url: location.href});
+  // 1) 모바일 등: 기기 기본 공유창(카톡·메시지 등)
+  if(navigator.share){
+    try{ await navigator.share(data); return; }
+    catch(e){ if(e && e.name === "AbortError") return; } // 사용자가 닫음
+  }
+  // 2) 폴백: 링크 복사
+  try{
+    await navigator.clipboard.writeText(data.url);
+    showShareToast("링크가 복사되었어요. 산악크루에게 붙여넣어 보내세요.");
+  }catch(e){
+    // 3) 최후 폴백: 수동 선택
+    const ta = document.createElement("textarea");
+    ta.value = data.url; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); showShareToast("링크가 복사되었어요. 산악크루에게 붙여넣어 보내세요."); }
+    catch(_){ showShareToast(data.url); }
+    document.body.removeChild(ta);
   }
 });
 
